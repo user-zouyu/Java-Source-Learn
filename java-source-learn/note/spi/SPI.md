@@ -13,7 +13,7 @@
 > 中的配置文件，配置文件中有接口的具体实现类名，可以根据这个类名进行加载实例化，就可以使用该服务了。
 > JDK中查找服务的实现的工具类是：java.util.ServiceLoader。
 
-## 简单实现
+## 简单使用
 ### 提供接口
 ```java
 // class name: com.zouyu.hello.Hello

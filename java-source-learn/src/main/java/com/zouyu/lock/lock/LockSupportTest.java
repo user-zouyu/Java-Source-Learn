@@ -26,7 +26,7 @@ public class LockSupportTest {
         Thread.sleep(3000);
         System.out.println("unpark");
 //        thread.interrupt();
-//        LockSupport.unpark(thread);
+        LockSupport.unpark(thread);
 
         thread.join();
     }
