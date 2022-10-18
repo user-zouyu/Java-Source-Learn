@@ -144,11 +144,11 @@ public void run() {
     } finally {
         // runner must be non-null until state is settled to
         // prevent concurrent calls to run()
-        runner = null;
+        runner = null; //
         // state must be re-read after nulling runner to prevent
         // leaked interrupts
         int s = state;
-        if (s >= INTERRUPTING)
+        if (s >= INTERRUPTING) // 确保 state 转换 INTERRUPTING -> INTERRUPTED
             handlePossibleCancellationInterrupt(s);
     }
 }
@@ -158,20 +158,28 @@ public void run() {
 
 ```java
 protected void setException(Throwable t) {
+    // 改变状态 NEW -> COMPLETING
     if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) {
-        outcome = t;
+        outcome = t; // 保存异常结果
+        // 把 COMPLETING 更改为终态 EXCEPTIONAL
         UNSAFE.putOrderedInt(this, stateOffset, EXCEPTIONAL); // final state
-        finishCompletion();
+        finishCompletion(); // 通知阻塞线程
     }
 }
 ```
+
+- 为什么要 NEW->COMPLETING 要使用 CAS ?
+
+  防止取消任务（ NEW->CANCELLED），存在并发安全。 
 
 #### 保存结果 set(V v)
 
 ```java
 protected void set(V v) {
+    // 更改状态为中间态 COMPLETING
     if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) {
-        outcome = v;
+        outcome = v; // 保存正常结果
+        // 把中间状态更改为最终状态 NORMAL
         UNSAFE.putOrderedInt(this, stateOffset, NORMAL); // final state
         finishCompletion();
     }
@@ -207,20 +215,14 @@ private void finishCompletion() {
 }
 ```
 
-
-
-
-
-
-
 #### 核心方法 get() 
 
 ```java
  public V get() throws InterruptedException, ExecutionException {
     int s = state;
-    if (s <= COMPLETING)
-        s = awaitDone(false, 0L);
-    return report(s);
+    if (s <= COMPLETING) // NEW 或者 COMPLETING 
+        s = awaitDone(false, 0L); // 进入等待
+    return report(s); // 结果处理
 }
 ```
 
@@ -229,13 +231,15 @@ private void finishCompletion() {
 ```java
 public V get(long timeout, TimeUnit unit)
     throws InterruptedException, ExecutionException, TimeoutException {
+    // 健壮性判断
     if (unit == null)
         throw new NullPointerException();
     int s = state;
+    // 如果任务还未执行完成且等待后任务完成，处理返回结果，否则抛出 TimeoutException 超时异常
     if (s <= COMPLETING &&
         (s = awaitDone(true, unit.toNanos(timeout))) <= COMPLETING)
         throw new TimeoutException();
-    return report(s);
+    return report(s); // 结果处理
 }
 ```
 
@@ -248,35 +252,57 @@ private int awaitDone(boolean timed, long nanos)
     WaitNode q = null;
     boolean queued = false;
     for (;;) {
+        // 该线程被中断了，移除等待节点并抛出中断异常
         if (Thread.interrupted()) {
             removeWaiter(q);
             throw new InterruptedException();
         }
 
         int s = state;
+        // 已经执行完成，返回 state
         if (s > COMPLETING) {
             if (q != null)
                 q.thread = null;
             return s;
         }
+        // 正在写入结果或异常，只需要放弃CPU等待状态改变
         else if (s == COMPLETING) // cannot time out yet
             Thread.yield();
+        // 创建节点
         else if (q == null)
             q = new WaitNode();
+        // 如果节点没有加入队列里，尝试把节点加入队列
         else if (!queued)
             queued = UNSAFE.compareAndSwapObject(this, waitersOffset,
                                                  q.next = waiters, q);
+        // 如果设置了超时，判断是否超时，如果超时直接返回状态，否则 park 剩下时间
         else if (timed) {
             nanos = deadline - System.nanoTime();
+            // 已经超时，删除节点返回状态
             if (nanos <= 0L) {
                 removeWaiter(q);
                 return state;
             }
             LockSupport.parkNanos(this, nanos);
         }
+        // 没有设置超时，等待被唤醒或中断
         else
             LockSupport.park(this);
     }
+}
+```
+
+#### 结果处理 report(int s)
+
+```java
+private V report(int s) throws ExecutionException {
+    Object x = outcome;
+    if (s == NORMAL) // 任务正常执行返回
+        return (V)x;
+    if (s >= CANCELLED) // 任务被取消
+        throw new CancellationException();
+    // 任务被中断或其他执行异常
+    throw new ExecutionException((Throwable)x);
 }
 ```
 
@@ -284,10 +310,12 @@ private int awaitDone(boolean timed, long nanos)
 
 ```java
 public boolean cancel(boolean mayInterruptIfRunning) {
+    // 任务还没有执行，尝试修改 state 为 INTERRUPTING 或 CANCELLED
     if (!(state == NEW &&
           UNSAFE.compareAndSwapInt(this, stateOffset, NEW,
               mayInterruptIfRunning ? INTERRUPTING : CANCELLED)))
         return false;
+    // 任务已经开始执行，给线程添加中断标志并更改为最终状态
     try {    // in case call to interrupt throws exception
         if (mayInterruptIfRunning) {
             try {
@@ -299,11 +327,49 @@ public boolean cancel(boolean mayInterruptIfRunning) {
             }
         }
     } finally {
+        // 通知等待的线程
         finishCompletion();
     }
     return true;
 }
 ```
 
+#### 核心方法 runAndReset()
 
+```java
+protected boolean runAndReset() {
+    // 与 run() 原理相同，主要方法不同是在处理结果的时候。
+    // runAndReset() 在调用成功后不会保存执行结果，只会记录异常或取消任务。
+    if (state != NEW ||
+        !UNSAFE.compareAndSwapObject(this, runnerOffset,
+                                     null, Thread.currentThread()))
+        return false;
+    boolean ran = false;
+    int s = state;
+    try {
+        Callable<V> c = callable;
+        if (c != null && s == NEW) {
+            try {
+                c.call(); // don't set result
+                ran = true;
+            } catch (Throwable ex) {
+                setException(ex);
+            }
+        }
+    } finally {
+        // runner must be non-null until state is settled to
+        // prevent concurrent calls to run()
+        runner = null;
+        // state must be re-read after nulling runner to prevent
+        // leaked interrupts
+        s = state;
+        if (s >= INTERRUPTING)
+            handlePossibleCancellationInterrupt(s);
+    }
+    return ran && s == NEW;
+}
+```
 
+- 在什么时候使用？
+
+  在定时任务线程池时，周期性任务使用。
