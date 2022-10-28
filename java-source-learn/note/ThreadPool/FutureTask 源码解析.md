@@ -138,6 +138,7 @@ public void run() {
                 ran = false;
                 setException(ex);  // 执行失败，保存抛出异常
             }
+            // 可以防止保存结果的异常被 catch 捕获
             if (ran)
                 set(result); // 执行成功，保存执行结果
         }
