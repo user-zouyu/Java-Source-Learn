@@ -14,6 +14,7 @@
         <module>collection-learn</module>
         <module>juc-learn</module>
         <module>spi-learn</module>
+        <module>optional-learn</module>
     </modules>
 
     <properties>
