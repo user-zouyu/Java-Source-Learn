@@ -2,7 +2,7 @@
 > 这是一个可以为null的容器对象。如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象。
 
 ## Optional UML
-![Optional](.assert/Optional.png)
+![Optional](./.assert/Optional.png)
 
 ## 构建方法
 
