@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>java.util.concurrent.locks.ReentrantReadWriteLock</OriginalElement>
+  <nodes>
+    <node x="511.625" y="1491.5">java.util.concurrent.locks.ReentrantReadWriteLock.Sync.ThreadLocalHoldCounter</node>
+    <node x="20.0" y="1468.0">java.util.concurrent.locks.ReentrantReadWriteLock.FairSync</node>
+    <node x="448.1046511627908" y="694.0">java.util.concurrent.locks.ReentrantReadWriteLock.Sync</node>
+    <node x="864.1046511627908" y="935.5">java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock</node>
+    <node x="755.625" y="-94.5">java.io.Serializable</node>
+    <node x="298.5" y="-119.0">java.util.concurrent.locks.ReadWriteLock</node>
+    <node x="756.625" y="1480.0">java.util.concurrent.locks.ReentrantReadWriteLock.Sync.HoldCounter</node>
+    <node x="-131.0" y="912.5">java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock</node>
+    <node x="202.0" y="10.0">java.util.concurrent.locks.ReentrantReadWriteLock</node>
+    <node x="261.0" y="1468.0">java.util.concurrent.locks.ReentrantReadWriteLock.NonfairSync</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock" target="java.io.Serializable" relationship="REALIZATION">
+      <point x="0.0" y="-315.0" />
+      <point x="376.5" y="-21.0" />
+      <point x="820.125" y="-21.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.Sync.HoldCounter" target="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" relationship="INNER_CLASS">
+      <point x="0.0" y="-38.5" />
+      <point x="827.125" y="1447.0" />
+      <point x="745.1046511627908" y="1447.0" />
+      <point x="99.0" y="361.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.NonfairSync" target="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" relationship="GENERALIZATION">
+      <point x="-55.25" y="-50.5" />
+      <point x="316.25" y="1447.0" />
+      <point x="279.2936046511628" y="1447.0" />
+      <point x="279.2936046511628" y="1437.0" />
+      <point x="547.1046511627907" y="1437.0" />
+      <point x="-99.0" y="361.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.Sync.ThreadLocalHoldCounter" target="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" relationship="INNER_CLASS">
+      <point x="0.0" y="-27.0" />
+      <point x="624.125" y="1447.0" />
+      <point x="745.1046511627908" y="1447.0" />
+      <point x="99.0" y="361.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock" target="java.util.concurrent.locks.ReadWriteLock" relationship="REALIZATION">
+      <point x="0.0" y="-315.0" />
+      <point x="0.0" y="38.5" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.NonfairSync" target="java.util.concurrent.locks.ReentrantReadWriteLock" relationship="INNER_CLASS">
+      <point x="55.25" y="-50.5" />
+      <point x="426.75" y="1447.0" />
+      <point x="376.5" y="1447.0" />
+      <point x="0.0" y="315.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock" target="java.util.concurrent.locks.ReentrantReadWriteLock" relationship="INNER_CLASS">
+      <point x="61.49999999999994" y="-142.5" />
+      <point x="53.49999999999994" y="672.0" />
+      <point x="376.5" y="672.0" />
+      <point x="0.0" y="315.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.FairSync" target="java.util.concurrent.locks.ReentrantReadWriteLock" relationship="INNER_CLASS">
+      <point x="-55.25" y="-50.5" />
+      <point x="75.25" y="1447.0" />
+      <point x="125.5" y="1447.0" />
+      <point x="125.5" y="672.0" />
+      <point x="376.5" y="672.0" />
+      <point x="0.0" y="315.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" target="java.io.Serializable" relationship="REALIZATION">
+      <point x="99.0" y="-361.0" />
+      <point x="745.1046511627908" y="662.0" />
+      <point x="820.125" y="662.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock" target="java.io.Serializable" relationship="REALIZATION">
+      <point x="-61.50000000000006" y="-142.5" />
+      <point x="-69.50000000000011" y="672.0" />
+      <point x="15.29360465116281" y="672.0" />
+      <point x="15.29360465116281" y="-11.0" />
+      <point x="820.125" y="-11.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" target="java.util.concurrent.locks.ReentrantReadWriteLock" relationship="INNER_CLASS">
+      <point x="-99.0" y="-361.0" />
+      <point x="547.1046511627908" y="672.0" />
+      <point x="376.5" y="672.0" />
+      <point x="0.0" y="315.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.FairSync" target="java.util.concurrent.locks.ReentrantReadWriteLock.Sync" relationship="GENERALIZATION">
+      <point x="55.25" y="-50.5" />
+      <point x="185.75" y="1447.0" />
+      <point x="279.2936046511628" y="1447.0" />
+      <point x="279.2936046511628" y="1437.0" />
+      <point x="547.1046511627907" y="1437.0" />
+      <point x="-99.0" y="361.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock" target="java.io.Serializable" relationship="REALIZATION">
+      <point x="60.0" y="-119.5" />
+      <point x="1044.1046511627906" y="672.0" />
+      <point x="1002.9186046511627" y="672.0" />
+      <point x="1002.9186046511627" y="-11.0" />
+      <point x="820.125" y="-11.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock" target="java.util.concurrent.locks.ReentrantReadWriteLock" relationship="INNER_CLASS">
+      <point x="-60.0" y="-119.5" />
+      <point x="924.1046511627908" y="672.0" />
+      <point x="376.5" y="672.0" />
+      <point x="0.0" y="315.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="426.0" y="122.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -1,5 +1,6 @@
 package com.zouyu.lock.lock;
 
+import com.zouyu.common.TimeUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.locks.Condition;
@@ -11,12 +12,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0.0
  */
 public class ReentrantLockTest {
-
-    private final ReentrantLock lock = new ReentrantLock(true);
-
-
     @Test
     void test() throws InterruptedException {
+        ReentrantLock lock = new ReentrantLock(true);
 //        lock.lock();
         Condition condition = lock.newCondition();
         condition.await();
@@ -33,6 +31,7 @@ public class ReentrantLockTest {
 
     @Test
     void parkTest() throws InterruptedException {
+        ReentrantLock lock = new ReentrantLock(true);
         Thread thread = new Thread(() -> {
             for (int i = 0; i < 5; i++) {
                 try {
@@ -52,6 +51,24 @@ public class ReentrantLockTest {
         LockSupport.unpark(thread);
         System.out.println("unpark");
         thread.join();
+    }
+
+    @Test
+    void test2() {
+        ReentrantLock lock = new ReentrantLock(true);
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                lock.lock();
+                try {
+                    TimeUtils.SECONDS.sleep(5);
+                } finally {
+                    lock.unlock();
+                }
+            }).start();
+        }
+
+        TimeUtils.SECONDS.sleep(1000);
+
     }
 
 }
